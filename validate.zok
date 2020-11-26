@@ -148,7 +148,8 @@ def main(field epoch_head, u32[8] prev_block_hash, private u32[2][20] intermedia
 
     u32[8] block_hash = prev_block_hash
     u32[3][8] blocks = [[0x00000000;8];3]
-    for field i in 0..2 do
+        
+    for field i in 0..3 do
       block_hash = validate_block_header(reference_target, block_hash, intermediate_blocks[i])
       blocks[i] = block_hash
     endfor
