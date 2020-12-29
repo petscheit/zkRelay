@@ -1,5 +1,6 @@
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from bitstring import BitArray
+import json
 
 GENESIS_BLOCK_HASH = '000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f'
 
@@ -48,6 +49,11 @@ def hexToBinaryZokratesInput(input):
     bitarray = BitArray(bytes=preimage)
     return " ".join(bitarray.bin)
 
+def hexToEightBitHexArray(input):
+   return ["0x" + input[i:i+8] for i in range(0,len(input), 8)]
+
+def buildInputJson(epoch_head, prev_block_hash, intermediate_zokrates_blocks, final_zokrates_block):
+    return json.dumps([str(epoch_head), prev_block_hash, intermediate_zokrates_blocks, final_zokrates_block]).replace('"', '\\"')
 
 def createZokratesInputFromBlock(block):
     version = littleEndian(block['versionHex'])
@@ -63,8 +69,7 @@ def createZokratesInputFromBlock(block):
 
     return header
 
-
-def generateZokratesInputFromBlock(first_block, amount):
+def generateZokratesInputFromBlock(ctx, first_block, amount):
     last_block = first_block + amount
     blocks = getBlocksInRange(first_block, last_block)
 
@@ -72,11 +77,10 @@ def generateZokratesInputFromBlock(first_block, amount):
     epoch_head = getBlocksInRange(epoch_header_block_number, epoch_header_block_number+1) \
         if first_block >= 2016 else getBlocksInRange(0, 1)
     epoch_head = hexToDecimalZokratesInput(createZokratesInputFromBlock(epoch_head[0]))
-    prev_block_hash = hexToDecimalZokratesInput(littleEndian(getBlocksInRange(first_block-1,first_block)[0]["hash"]))
-    intermediate_zokrates_blocks = [hexToDecimalZokratesInput(createZokratesInputFromBlock(block)) for block in blocks[0:len(blocks)-1]]
-    intermediate_zokrates_blocks = [item for sublist in intermediate_zokrates_blocks for item in sublist] #flatten
-    final_zokrates_block = hexToDecimalZokratesInput(createZokratesInputFromBlock(blocks[len(blocks)-1]))
-    return str([epoch_head[4], *prev_block_hash, *intermediate_zokrates_blocks, *final_zokrates_block]).replace(',','').replace('[','').replace(']','').replace('\'','')
+    prev_block_hash = hexToEightBitHexArray(littleEndian(getBlocksInRange(ctx, first_block-1,first_block)[0]["hash"]))
+    intermediate_zokrates_blocks = [hexToEightBitHexArray(createZokratesInputFromBlock(block)) for block in blocks[0:len(blocks)-1]]
+    final_zokrates_block = hexToEightBitHexArray(createZokratesInputFromBlock(blocks[len(blocks)-1]))
+    return buildInputJson(epoch_head[4], prev_block_hash, intermediate_zokrates_blocks, final_zokrates_block)
 
 
 def generateZokratesInputForBlocks(blocks):
