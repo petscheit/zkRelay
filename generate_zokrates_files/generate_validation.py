@@ -145,8 +145,7 @@ def validate_target(field epoch_head, u32 epoch_tail, u32 next_epoch_head) -> (b
     field delta = target - encoded_target_extended
     delta = if target >= encoded_target_extended then delta else maxVariance + 1 fi
     bool valid = if delta <= maxVariance then true else false fi
-    //field valid = if (37202390668975264121251936602161152-81015268229227203625641762304819200) < 1267650600228229401496703205375 then 1 else 0 fi
-    return valid, current_target
+return valid, current_target
 
 def validate_block_header(u32 reference_target, u32[8] prev_block_hash, u32[20] preimage) -> (u32[8]):
 	// preImage: [0] -> Block version, [1:8] -> prev_block_hash, [9:16] -> merkle root, [17:19] => time, target, nonce 
@@ -166,7 +165,7 @@ def validate_block_header(u32 reference_target, u32[8] prev_block_hash, u32[20] 
     field target = packTarget(toBigEndian(u32_to_bits(preimage[18])))
 
     assert(target > pack_128_bool_to_field(toBigEndian(u32_4_to_bool_128(r[4..8]))))
-	  return r
+return r
 
 """
     main_block = []
@@ -188,6 +187,6 @@ def validate_block_header(u32 reference_target, u32[8] prev_block_hash, u32[20] 
     bool targetValid, field target = validate_target(epoch_head, intermediate_blocks[0][17], final_block[18])
     u32[8] merkle_root = compute_merkle_root(blocks)
 
-    return targetValid, target, blocks[{n_intermediate}], merkle_root
+return targetValid, target, blocks[{n_intermediate}], merkle_root
     """.format(n_intermediate=(n_blocks - 1)))
     return static_code + "\n".join(main_block)
