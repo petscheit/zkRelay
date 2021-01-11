@@ -150,13 +150,13 @@ def validate_target(field epoch_head, u32 epoch_tail, u32 next_epoch_head) -> (b
 
 def validate_block_header(u32 reference_target, u32[8] prev_block_hash, u32[20] preimage) -> (u32[8]):
 	// preImage: [0] -> Block version, [1:8] -> prev_block_hash, [9:16] -> merkle root, [17:19] => time, target, nonce 
-    assert(preimage[1] == prev_block_hash[0] && \
-            preimage[2] == prev_block_hash[1] && \
-            preimage[3] == prev_block_hash[2] && \
-            preimage[4] == prev_block_hash[3] && \
-            preimage[5] == prev_block_hash[4] && \
-            preimage[6] == prev_block_hash[5] && \
-            preimage[7] == prev_block_hash[6] && \
+    assert(preimage[1] == prev_block_hash[0] && \\
+            preimage[2] == prev_block_hash[1] && \\
+            preimage[3] == prev_block_hash[2] && \\
+            preimage[4] == prev_block_hash[3] && \\
+            preimage[5] == prev_block_hash[4] && \\
+            preimage[6] == prev_block_hash[5] && \\
+            preimage[7] == prev_block_hash[6] && \\
             preimage[8] == prev_block_hash[7])
     // converting to big endian is not necessary here, as reference target is encoded little endian
     assert(preimage[18] == reference_target)
