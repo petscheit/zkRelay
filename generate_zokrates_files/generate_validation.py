@@ -183,11 +183,11 @@ def validate_block_header(u32 reference_target, u32[8] prev_block_hash, u32[20] 
     endfor""".format(n_hashes=(n_blocks), n_intermediate=(n_blocks - 1)))
 
     main_block.append("""
-        block_hash = validate_block_header(final_block[18], block_hash, final_block)
-        blocks[{n_intermediate}] = block_hash
-        bool targetValid, field target = validate_target(epoch_head, intermediate_blocks[0][17], final_block[18])
-        u32[8] merkle_root = compute_merkle_root(blocks)
+    block_hash = validate_block_header(final_block[18], block_hash, final_block)
+    blocks[{n_intermediate}] = block_hash
+    bool targetValid, field target = validate_target(epoch_head, intermediate_blocks[0][17], final_block[18])
+    u32[8] merkle_root = compute_merkle_root(blocks)
 
-        return targetValid, target, blocks[{n_intermediate}], merkle_root
+    return targetValid, target, blocks[{n_intermediate}], merkle_root
     """.format(n_intermediate=(n_blocks - 1)))
     return static_code + "\n".join(main_block)

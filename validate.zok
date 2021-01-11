@@ -160,10 +160,10 @@ def main(field epoch_head, u32[8] prev_block_hash, private u32[2][20] intermedia
       blocks[i] = block_hash
     endfor
 
-        block_hash = validate_block_header(final_block[18], block_hash, final_block)
-        blocks[2] = block_hash
-        bool targetValid, field target = validate_target(epoch_head, intermediate_blocks[0][17], final_block[18])
-        u32[8] merkle_root = compute_merkle_root(blocks)
+    block_hash = validate_block_header(final_block[18], block_hash, final_block)
+    blocks[2] = block_hash
+    bool targetValid, field target = validate_target(epoch_head, intermediate_blocks[0][17], final_block[18])
+    u32[8] merkle_root = compute_merkle_root(blocks)
 
-        return targetValid, target, blocks[2], merkle_root
+    return targetValid, target, blocks[2], merkle_root
     
