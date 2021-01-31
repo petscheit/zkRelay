@@ -42,6 +42,8 @@ def getBlocksInRange(ctx, i, j):
     #     print(json.dumps(block, indent=4, sort_keys=True))
     return blocks
 
+def hexToEightByteHexArray(input):
+   return ["0x" + input[i:i+8] for i in range(0,len(input), 8)]
 
 def hexToDecimalZokratesInput(input):
     preimage = bytes.fromhex(input)
@@ -53,7 +55,6 @@ def hexToBinaryZokratesInput(input):
     preimage = bytes.fromhex(input)
     bitarray = BitArray(bytes=preimage)
     return " ".join(bitarray.bin)
-
 
 def createZokratesInputFromBlock(block):
     version = littleEndian(block['versionHex'])
@@ -67,7 +68,6 @@ def createZokratesInputFromBlock(block):
 
     header = version + little_endian_previousHash + little_endian_merkleRoot + little_endian_time + little_endian_difficultyBits + little_endian_nonce
     return header
-
 
 def generateZokratesInputFromBlock(ctx, first_block, amount):
     last_block = first_block + amount
