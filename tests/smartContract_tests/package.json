@@ -11,6 +11,10 @@
     "test_without_preparation": "bash exec_test.sh",
     "compile": "truffle compile"
   },
+  "engines": {
+    "node": ">=10.0.0",
+    "npm": ">=6.0.0"
+  },
   "author": "Leonard Stutzer",
   "license": "ISC",
   "dependencies": {
