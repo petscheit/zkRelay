@@ -13,7 +13,7 @@ from termcolor import colored
 
 initColor()
 
-SUPPORTED_VERSION_ZOKRATES = '0.5.1'
+SUPPORTED_VERSION_ZOKRATES = '0.6'
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -33,7 +33,7 @@ def zkRelay_cli(ctx, no_verbose, config_file):
     """
     # check if correct zokrates version is used. (currently supported 0.5.1)
     result = subprocess.run(['zokrates', '--version'], check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    if result.returncode is not 0:
+    if result.returncode != 0:
         print(colored('Was not able to execute zokrates.', 'red') + ' Did you install it? (currently supported version = {})'.format(SUPPORTED_VERSION_ZOKRATES))
         exit(-1)
     correct_version = re.search('.*{}'.format(SUPPORTED_VERSION_ZOKRATES), result.stdout.decode("utf-8"))
@@ -175,7 +175,7 @@ def create_merkle_proof(ctx, block_no, bc_host, bc_port, bc_user, bc_pwd):
     print(colored('Done!', 'green'))
 
     try:
-        click.echo(colored('Exec "zokrates compute-witness --light"', 'cyan'))
+        click.echo(colored('Exec "zokrates compute-witness --light -a {}"'.format(zokrates_input), 'cyan'))
         command = ['zokrates', 'compute-witness', '--light', '-a']
         command += zokrates_input.split(' ')
         subprocess.run(command, check=True, cwd="mk_tree_validation/", stdout=verbose_output)
