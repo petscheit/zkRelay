@@ -16,13 +16,15 @@ def validateBatchFromBlockNo(ctx, batch_no, batch_size, verbose_output=subproces
     result = generateZokratesInputFromBlock(ctx, (batch_no-1)*batch_size+1, batch_size)
     print(colored('Done!', 'green'))
 
-    print(colored('Exec "{}"'.format(cmd_compute_witness), 'cyan'))
-    command = cmd_compute_witness.split() + result.split()
+    print(colored('Exec "{} {}"'.format(cmd_compute_witness, result), 'cyan'))
+    command = ['/usr/bin/time', '-f', '"Max used memory during exec: %M kbytes"']
+    command += cmd_compute_witness.split() + result.split()
     subprocess.run(command, check=True, stdout=verbose_output)
     print(colored('Done!', 'green'))
 
     print(colored('Exec "{}"'.format(cmd_generate_proof), 'cyan'))
-    command = cmd_generate_proof.split()
+    command = ['/usr/bin/time', '-f', '"Max used memory during exec: %M kbytes"']
+    command += cmd_generate_proof.split()
     subprocess.run(command, check=True, stdout=verbose_output)
     print(colored('Done!', 'green'))
 

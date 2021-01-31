@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity ^0.5.0;
+pragma solidity ^0.6.1;
 
 import "./verifier.sol" as zkVerifier;
 import "./mk_tree_validation/verifier.sol" as mkVerifier;
@@ -51,22 +51,21 @@ contract BatchVerifier {
     }
     
     
-    /**
+    /*
      * Assignmet of Input array variables:
      * 0:       First block of the given epoch
      * 1 - 2:   Hash of the block stored in the previous batch
      * 3 - 7:   Last block of the given batch
-     * 8:       Result (boolean value indicating if the batch is valid)
-     * 9:       Target validity (boolean value indicating if the encoded target equals the computed target)
+     * 8:       Target validity (boolean value indicating if the encoded target equals the computed target)
+     * 9:       Target value
      * 10 - 11: Block hash of the last block in the given batch
-     * 12:      Target value
-     * 13 - 14: Merkle root
-     **/
+     * 12 - 13: Merkle root
+     */
     function submitBatch(
         uint[2] memory a,
         uint[2][2] memory b,
         uint[2] memory c,
-        uint[15] memory input
+        uint[14] memory input
     ) public returns (bool r) {
         require(verifyBatchCorrectness(a, b, c, input, 0, branches[0].numBatchChain, 0), 'Could not verify batch correctness');
         
@@ -84,7 +83,7 @@ contract BatchVerifier {
         uint[2] memory a,
         uint[2][2] memory b,
         uint[2] memory c,
-        uint[15] memory input,
+        uint[14] memory input,
         uint branchId,
         uint256 batchHeight,
         uint256 offset
@@ -93,7 +92,7 @@ contract BatchVerifier {
         require(verifier.verifyTx(a,b, c, input), 'Could not verify tx');
 
         // Verify the correctness of the submitted headers
-        require(input[8] == 1, 'Submitted headers are not correct');
+        // require(input[8] == 1, 'Submitted headers are not correct');
 
         // Verify reference to previous block
         uint prev_block_hash = from128To256(input[1], input[2]);
@@ -101,7 +100,7 @@ contract BatchVerifier {
 
         // Every fourth batch submission, a new epoch begin
         // Verify if the target has been calculated correctly
-        require(((batchHeight % BATCHES_IN_EPOCH) != 0) || (((batchHeight % BATCHES_IN_EPOCH) == 0) && (input[9] == 1)), 'Target was not calculated correctly.');
+        require(((batchHeight % BATCHES_IN_EPOCH) != 0) || (((batchHeight % BATCHES_IN_EPOCH) == 0) && (input[8] == 1)), 'Target was not calculated correctly.');
 
         // Verify that the correct first block of an epoch was given
         // Ensure accessing the correct chain , the fork or the main chain
@@ -126,7 +125,7 @@ contract BatchVerifier {
         uint[2] memory a,
         uint[2][2] memory b,
         uint[2] memory c,
-        uint[15] memory input,
+        uint[14] memory input,
         uint batchHeight
     ) public returns (uint256 challengeId) {
         // Verify batchHeight is correct
@@ -153,7 +152,7 @@ contract BatchVerifier {
         uint[2] memory a,
         uint[2][2] memory b,
         uint[2] memory c,
-        uint[15] memory input,
+        uint[14] memory input,
         uint256 challengeId
     ) public returns (bool) {
         uint256 batchHeight = branches[challengeId].startingAtBatchHeight + branches[challengeId].numBatchChain;
@@ -198,10 +197,10 @@ contract BatchVerifier {
         return true;
     }
 
-    function createBatch(uint[15] memory input, Branch storage chain, Batch storage batch) internal {
+    function createBatch(uint[14] memory input, Branch storage chain, Batch storage batch) internal {
         uint256 blockHash = from128To256(input[10], input[11]);
-        uint256 difficulty = difficultyFromTarget(input[12]);
-        uint256 merkleRoot = from128To256(input[13], input[14]);
+        uint256 difficulty = difficultyFromTarget(input[9]);
+        uint256 merkleRoot = from128To256(input[12], input[13]);
         
         batch.headerHash = blockHash;
         batch.cumDifficulty = chain.batchChain[chain.numBatchChain - 1].cumDifficulty + difficulty;
