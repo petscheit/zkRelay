@@ -6,7 +6,7 @@ import "./mk_tree_validation/verifier.sol" as mkVerifier;
 
 contract BatchVerifier {
 
-    uint256 constant BATCH_SIZE = 5;
+    uint256 constant BATCH_SIZE = 4;
     uint256 constant EPOCH_SIZE = 2016;
     uint256 constant BATCHES_IN_EPOCH = EPOCH_SIZE / BATCH_SIZE;
 

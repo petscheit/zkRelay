@@ -37,6 +37,9 @@ def getBlocksInRange(ctx, i, j):
     block_hashes = getBlockHeadersInRange(ctx, i, j)
     rpc_connection = AuthServiceProxy(getBitcoinClientURL(ctx))
     blocks = rpc_connection.batch_([["getblock", h] for h in block_hashes])
+    # for block in blocks:
+    #     block['tx'] = None
+    #     print(json.dumps(block, indent=4, sort_keys=True))
     return blocks
 
 def hexToEightByteHexArray(input):
